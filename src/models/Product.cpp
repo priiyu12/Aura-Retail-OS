@@ -1,0 +1,48 @@
+#include "../../include/models/Product.h"
+#include <algorithm>
+
+Product::Product()
+    : productId(0), name(""), basePrice(0.0), stock(0),
+      reservedStock(0), faultyStock(0), lowStockThreshold(2) {}
+
+Product::Product(int productId, const std::string& name, double basePrice, int stock, int lowStockThreshold)
+    : productId(productId), name(name), basePrice(basePrice), stock(stock),
+      reservedStock(0), faultyStock(0), lowStockThreshold(lowStockThreshold) {}
+
+int Product::getProductId() const { return productId; }
+std::string Product::getName() const { return name; }
+double Product::getBasePrice() const { return basePrice; }
+int Product::getStock() const { return stock; }
+int Product::getReservedStock() const { return reservedStock; }
+int Product::getFaultyStock() const { return faultyStock; }
+int Product::getLowStockThreshold() const { return lowStockThreshold; }
+
+int Product::getAvailableStock() const {
+    return stock - reservedStock - faultyStock;
+}
+
+bool Product::reserveStock(int quantity) {
+    if (quantity <= 0) return false;
+    if (getAvailableStock() < quantity) return false;
+    reservedStock += quantity;
+    return true;
+}
+
+void Product::releaseReservedStock(int quantity) {
+    reservedStock = std::max(0, reservedStock - quantity);
+}
+
+bool Product::confirmPurchase(int quantity) {
+    if (quantity <= 0) return false;
+    if (reservedStock < quantity) return false;
+
+    reservedStock -= quantity;
+    stock -= quantity;
+    return true;
+}
+
+void Product::restock(int quantity) {
+    if (quantity > 0) {
+        stock += quantity;
+    }
+}
