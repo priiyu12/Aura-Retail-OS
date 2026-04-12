@@ -1,7 +1,7 @@
-# Aura-Retail-OS
-Designing an Autonomous Modular Smart-City Retail Infrastructure
+# Aura-Retail-OS — C++ Prototype
 
-# Zephyrus Retail OS — C++ Prototype
+![Language](https://img.shields.io/badge/language-C++-blue)
+![Stage](https://img.shields.io/badge/stage-Subtask%202-green)
 
 A modular C++ prototype for an autonomous smart-city retail kiosk platform designed using object-oriented principles and design patterns.
 
@@ -14,6 +14,29 @@ Zephyrus Retail OS is a smart retail kiosk system designed for multiple deployme
 - disaster zones distributing emergency supplies
 
 This project is being developed as part of the **IT620 Object Oriented Programming Project**.
+
+## Project Architecture Overview
+
+The system follows a layered and modular architecture to ensure scalability, maintainability, and clear separation of concerns.
+
+### Layers
+
+- **Interface Layer**
+  - `KioskInterface` (Facade Pattern)
+  - Provides simplified interaction for users and administrators
+
+- **Core Layer**
+  - `KioskCoreSystem`
+  - Coordinates all subsystems and manages workflow
+
+- **Subsystems**
+  - Inventory System
+  - Payment System
+  - Hardware Layer
+  - Pricing System
+  - Event & Monitoring System
+
+All subsystems interact through well-defined interfaces, ensuring low coupling and high cohesion across the system.
 
 ## Current Stage
 
@@ -137,3 +160,36 @@ include/   -> header files
 src/       -> implementation files
 main.cpp   -> interactive simulation entry point
 README.md  -> project documentation
+
+## How to Compile and Run
+
+### Prerequisites
+- C++ compiler supporting C++17 (g++ / clang++)
+- Terminal / Command Prompt
+
+---
+
+## Compile the Project
+
+### On Mac / Linux
+
+```bash
+g++ -std=c++17 main.cpp src/*/*.cpp -o kiosk_app
+
+### On Windows
+
+```bash
+g++ -std=c++17 main.cpp src/*/*.cpp -o kiosk_app.exe
+
+
+## Run the Project
+
+### On Mac / Linux
+
+```bash
+./kiosk_app
+
+### On Windows
+
+```bash
+kiosk_app.exe

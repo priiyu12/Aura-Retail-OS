@@ -100,7 +100,7 @@ int main() {
     int mainChoice;
 
     do {
-        std::cout << "\n===== Zephyrus Retail OS =====\n";
+        std::cout << "\n===== Aura Retail OS =====\n";
         std::cout << "1. User Mode\n";
         std::cout << "2. Admin Mode\n";
         std::cout << "0. Exit\n";
