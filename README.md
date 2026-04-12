@@ -7,11 +7,11 @@ A modular C++ prototype for an autonomous smart-city retail kiosk platform desig
 
 ## Project Overview
 
-Zephyrus Retail OS is a smart retail kiosk system designed for multiple deployment environments:
-- hospitals dispensing prescription medication
-- metro stations selling daily essentials
-- university campuses selling electronics
-- disaster zones distributing emergency supplies
+Aura Retail OS is a smart retail kiosk system designed for multiple deployment environments:
+- Hospitals dispensing prescription medication
+- Metro stations selling daily essentials
+- University campuses selling electronics
+- Disaster zones distributing emergency supplies
 
 This project is being developed as part of the **IT620 Object Oriented Programming Project**.
 
@@ -120,17 +120,35 @@ The following components currently exist as placeholders and will be fully imple
 
 ## Simulation Flow
 
-The current simulation works through console input:
+The current simulation works through console input and supports both **User Mode** and **Admin Mode**.
 
-1. user selects kiosk type
-2. system loads products for that environment
-3. user views products
-4. user enters product ID, quantity, and payment method
-5. system checks stock
-6. system calculates final price
-7. payment is processed
-8. hardware attempts dispensing
-9. system updates inventory and publishes alerts when needed
+1. system prompts user to select mode (User / Admin)
+
+---
+
+### User Mode Flow
+
+2. user selects kiosk type (Hospital / Metro / University / Disaster Relief)  
+3. system loads products for the selected environment  
+4. user views available products  
+5. user enters product ID, quantity, and payment method  
+6. system checks stock availability  
+7. system calculates final price using pricing strategy  
+8. payment is processed  
+9. hardware attempts to dispense the product  
+10. system updates inventory after successful transaction  
+11. system generates alerts (e.g., low stock or hardware failure)
+
+---
+
+### Admin Mode Flow
+
+2. admin enters password for authentication  
+3. admin selects kiosk type  
+4. admin views current inventory  
+5. admin can restock products  
+6. admin can run system diagnostics  
+7. admin can simulate hardware failure for testing  
 
 ## Team Contribution Mapping
 
