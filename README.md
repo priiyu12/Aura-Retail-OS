@@ -160,6 +160,7 @@ include/   -> header files
 src/       -> implementation files
 main.cpp   -> interactive simulation entry point
 README.md  -> project documentation
+```
 
 ## How to Compile and Run
 
@@ -172,24 +173,24 @@ README.md  -> project documentation
 ## Compile the Project
 
 ### On Mac / Linux
-
 ```bash
 g++ -std=c++17 main.cpp src/*/*.cpp -o kiosk_app
+```
 
 ### On Windows
-
 ```bash
 g++ -std=c++17 main.cpp src/*/*.cpp -o kiosk_app.exe
+```
 
 
 ## Run the Project
 
 ### On Mac / Linux
-
 ```bash
 ./kiosk_app
+```
 
 ### On Windows
-
 ```bash
 kiosk_app.exe
+```
