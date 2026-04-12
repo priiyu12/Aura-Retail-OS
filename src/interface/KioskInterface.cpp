@@ -11,6 +11,10 @@ void KioskInterface::runDiagnostics() {
     coreSystem->handleDiagnostics();
 }
 
+void KioskInterface::restockInventory(int productId, int quantity) {
+    coreSystem->handleRestock(productId, quantity);
+}
+
 void KioskInterface::displayProducts() const {
     coreSystem->showProducts();
 }

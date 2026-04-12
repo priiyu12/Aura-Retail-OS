@@ -5,7 +5,8 @@
 
 class LowStockEvent : public Event {
 public:
-    LowStockEvent() : Event("LowStockEvent") {}
+    LowStockEvent(const std::string& message)
+        : Event("LowStockEvent", message) {}
 };
 
 #endif

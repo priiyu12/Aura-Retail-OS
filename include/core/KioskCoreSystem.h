@@ -15,17 +15,21 @@ private:
     HardwareLayer* hardwareLayer;
     PricingSystem* pricingSystem;
     EventBus* eventBus;
+    std::string kioskType;
 
 public:
     KioskCoreSystem(InventorySystem* inventorySystem,
                     PaymentSystem* paymentSystem,
                     HardwareLayer* hardwareLayer,
                     PricingSystem* pricingSystem,
-                    EventBus* eventBus);
+                    EventBus* eventBus,
+                    const std::string& kioskType);
 
     bool handlePurchase(int productId, int quantity, const std::string& paymentMethod);
     void handleDiagnostics();
+    void handleRestock(int productId, int quantity);
     void showProducts() const;
+    std::string getKioskType() const;
 };
 
 #endif
