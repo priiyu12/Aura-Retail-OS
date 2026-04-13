@@ -14,6 +14,7 @@ public:
 
     void purchaseItem(int productId, int quantity, const std::string& paymentMethod);
     void runDiagnostics();
+    void restockInventory(int productId, int quantity);
     void displayProducts() const;
 };
 

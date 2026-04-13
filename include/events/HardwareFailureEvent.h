@@ -5,7 +5,8 @@
 
 class HardwareFailureEvent : public Event {
 public:
-    HardwareFailureEvent() : Event("HardwareFailureEvent") {}
+    HardwareFailureEvent(const std::string& message)
+        : Event("HardwareFailureEvent", message) {}
 };
 
 #endif
