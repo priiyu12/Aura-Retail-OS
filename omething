@@ -1,0 +1,72 @@
+[33mcommit bf27f409191190d36ace01f4ac34b2f2b823188a[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: Jay <202512012@dau.ac.in>
+Date:   Wed Apr 8 18:43:56 2026 +0530
+
+    add Kiosk interface, core system and pricing strategy
+
+[33mcommit 69638af22af7972f0ddf6a552d22512852c569b8[m
+Author: priiyu12 <priyashah.imca22@gmail.com>
+Date:   Wed Apr 8 14:57:40 2026 +0530
+
+    added interactive main simulation with 4 kiosk environment setups
+
+[33mcommit 4a5fd0ba921788f048d2a6f03531e648e4432148[m
+Author: Jenil Vijesh Shah <8822.stkabirdin@gmail.com>
+Date:   Wed Apr 8 14:53:01 2026 +0530
+
+    Updated event system and hardware layer
+
+[33mcommit 38effe3af946f50d57cc3d036ae479f3feb4beb3[m
+Author: Priya Shah <priyashah@Priyas-MacBook-Air.local>
+Date:   Wed Apr 8 01:01:55 2026 +0530
+
+    Updated payment system files
+
+[33mcommit dbd5a749e4e33712b7ec5e259cc9b963ed17a423[m
+Author: priiyu12 <priyashah.imca22@gmail.com>
+Date:   Tue Apr 7 21:47:54 2026 +0530
+
+    current project status
+
+[33mcommit 0621ae201280bf5cdbd5ffd84bb2eecde5c7db12[m
+Author: priiyu12 <priyashah.imca22@gmail.com>
+Date:   Tue Apr 7 21:45:59 2026 +0530
+
+    implement InventorySystem
+
+[33mcommit f5be2fa327213d541e99bdbcb4157800fadca691[m
+Author: priiyu12 <priyashah.imca22@gmail.com>
+Date:   Tue Apr 7 21:45:10 2026 +0530
+
+    removed
+
+[33mcommit 908552b22135ebf2848ebcba4414efabc0be3133[m
+Author: priiyu12 <priyashah.imca22@gmail.com>
+Date:   Tue Apr 7 21:43:22 2026 +0530
+
+    added Product model with stock, reserved stock, and availability logic
+
+[33mcommit 966a43aede23abf8708daf84c5058be34107336f[m
+Author: priiyu12 <priyashah.imca22@gmail.com>
+Date:   Mon Apr 6 17:37:42 2026 +0530
+
+    Folder Structure Created
+
+[33mcommit fda3edc6cbee9205d1ec5ada6083b459e5516fac[m
+Merge: 91b5909 ab8092c
+Author: priiyu12 <priyashah.imca22@gmail.com>
+Date:   Mon Apr 6 16:49:31 2026 +0530
+
+    merge completed
+
+[33mcommit 91b5909b6fcc8c9f88d40c6825383822f2fe74c4[m
+Author: priiyu12 <priyashah.imca22@gmail.com>
+Date:   Mon Apr 6 16:30:53 2026 +0530
+
+    Initial commit
+
+[33mcommit ab8092c193412e762f308f171deb8091afd9cbf9[m
+Author: Priya Shah <priyashah.imca22@gmail.com>
+Date:   Mon Apr 6 16:19:56 2026 +0530
+
+    Initial commit
