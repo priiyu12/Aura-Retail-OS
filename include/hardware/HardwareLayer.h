@@ -4,12 +4,14 @@
 class HardwareLayer {
 private:
     bool failNextDispense;
+    bool hardwareHealthy;
 
 public:
     HardwareLayer();
     bool dispenseItem(int productId, int quantity);
     void runDiagnostics();
     void setFailNextDispense(bool fail);
+    bool isHealthy() const;
 };
 
 #endif
