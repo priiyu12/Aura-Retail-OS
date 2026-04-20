@@ -10,7 +10,11 @@ KioskCoreSystem::KioskCoreSystem(InventorySystem* inventorySystem,
                                  PricingSystem* pricingSystem,
                                  EventBus* eventBus,
                                  TransactionManager* transactionManager,
-                                 const std::string& kioskType)
+                                 const std::string& kioskType,
+                                 KioskState* kioskState,
+                                 DecisionMediator* decisionMediator,
+                                 TransactionCaretaker* caretaker,
+                                 FailureHandler* failureHandler)
     : inventorySystem(inventorySystem),
       inventoryPolicy(inventoryPolicy),
       paymentSystem(paymentSystem),
@@ -18,10 +22,22 @@ KioskCoreSystem::KioskCoreSystem(InventorySystem* inventorySystem,
       pricingSystem(pricingSystem),
       eventBus(eventBus),
       transactionManager(transactionManager),
-      kioskType(kioskType) {}
+      kioskType(kioskType),
+      kioskState(kioskState),
+      decisionMediator(decisionMediator),
+      caretaker(caretaker),
+      failureHandler(failureHandler) {}
 
 bool KioskCoreSystem::handlePurchase(int productId, int quantity, const std::string& paymentMethod) {
     std::cout << "[CORE] Purchase request received.\n";
+    std::cout << "[STATUS] Kiosk Type: " << kioskType << "\n";
+    std::cout << "[STATUS] Current Mode: " << kioskState->getStateName() << "\n";
+
+    if (!decisionMediator->canProcessPurchase(kioskState)) {
+        std::cout << "[STATE] Purchase not allowed in current mode: "
+                  << kioskState->getStateName() << "\n";
+        return false;
+    }
 
     Product* product = inventorySystem->getProduct(productId);
     if (product == nullptr) {
@@ -40,12 +56,21 @@ bool KioskCoreSystem::handlePurchase(int productId, int quantity, const std::str
         return false;
     }
 
+    caretaker->saveSnapshot(
+        TransactionSnapshot(
+            productId,
+            product->getStock(),
+            product->getReservedStock()
+        )
+    );
+
     if (!inventorySystem->reserveItem(productId, quantity)) {
         std::cout << "[CORE] Failed to reserve item.\n";
         return false;
     }
 
     double totalPrice = pricingSystem->computePrice(product->getBasePrice(), quantity);
+
     int transactionId = transactionManager->createTransaction(
         "PURCHASE", productId, quantity, totalPrice, paymentMethod, "PENDING"
     );
@@ -63,9 +88,13 @@ bool KioskCoreSystem::handlePurchase(int productId, int quantity, const std::str
         inventorySystem->releaseItem(productId, quantity);
         transactionManager->updateTransactionStatus(transactionId, "FAILED_HARDWARE");
 
+        failureHandler->handle(
+            "Dispense failure for product ID " + std::to_string(productId)
+        );
+
         HardwareFailureEvent failureEvent(
             "Dispensing failed for product ID " + std::to_string(productId) +
-            ". Reserved stock released. Technician attention required."
+            ". Reserved stock released safely."
         );
         eventBus->publish(failureEvent);
 
@@ -93,6 +122,7 @@ bool KioskCoreSystem::handlePurchase(int productId, int quantity, const std::str
     std::cout << "\n===== TRANSACTION SUMMARY =====\n";
     std::cout << "Transaction ID: " << transactionId << "\n";
     std::cout << "Kiosk Type: " << kioskType << "\n";
+    std::cout << "Mode: " << kioskState->getStateName() << "\n";
     std::cout << "Product: " << product->getName() << "\n";
     std::cout << "Quantity: " << quantity << "\n";
     std::cout << "Payment Method: " << paymentMethod << "\n";
@@ -103,7 +133,24 @@ bool KioskCoreSystem::handlePurchase(int productId, int quantity, const std::str
     return true;
 }
 
+void KioskCoreSystem::handleRefund(int productId, int quantity) {
+    inventorySystem->restockItem(productId, quantity);
+
+    int transactionId = transactionManager->createTransaction(
+        "REFUND", productId, quantity, 0.0, "REFUND", "SUCCESS"
+    );
+
+    std::cout << "[CORE] Refund processed. Product restocked. Transaction ID: "
+              << transactionId << "\n";
+}
+
 void KioskCoreSystem::handleRestock(int productId, int quantity) {
+    if (!decisionMediator->canProcessRestock(kioskState)) {
+        std::cout << "[STATE] Restock not allowed in current mode: "
+                  << kioskState->getStateName() << "\n";
+        return;
+    }
+
     std::string reason;
     if (!inventoryPolicy->validateRestock(quantity, reason)) {
         std::cout << "[ADMIN] " << reason << "\n";
@@ -122,7 +169,14 @@ void KioskCoreSystem::handleRestock(int productId, int quantity) {
 }
 
 void KioskCoreSystem::handleDiagnostics() {
-    std::cout << "[STATUS] Running diagnostics for " << kioskType << " kiosk...\n";
+    if (!decisionMediator->canRunDiagnostics(kioskState)) {
+        std::cout << "[STATE] Diagnostics not allowed in current mode: "
+                  << kioskState->getStateName() << "\n";
+        return;
+    }
+
+    std::cout << "[STATUS] Running diagnostics for " << kioskType
+              << " kiosk in mode " << kioskState->getStateName() << "...\n";
     hardwareLayer->runDiagnostics();
 }
 
@@ -136,4 +190,8 @@ void KioskCoreSystem::showTransactionHistory() const {
 
 std::string KioskCoreSystem::getKioskType() const {
     return kioskType;
+}
+
+void KioskCoreSystem::setState(KioskState* state) {
+    kioskState = state;
 }

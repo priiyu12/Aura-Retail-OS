@@ -9,6 +9,10 @@
 #include "../pricing/PricingSystem.h"
 #include "../events/EventBus.h"
 #include "../transaction/TransactionManager.h"
+#include "../state/KioskState.h"
+#include "../core/DecisionMediator.h"
+#include "../transaction/TransactionCaretaker.h"
+#include "../hardware/FailureHandler.h"
 
 class KioskCoreSystem {
 private:
@@ -21,6 +25,11 @@ private:
     TransactionManager* transactionManager;
     std::string kioskType;
 
+    KioskState* kioskState;
+    DecisionMediator* decisionMediator;
+    TransactionCaretaker* caretaker;
+    FailureHandler* failureHandler;
+
 public:
     KioskCoreSystem(InventorySystem* inventorySystem,
                     InventoryPolicy* inventoryPolicy,
@@ -29,14 +38,20 @@ public:
                     PricingSystem* pricingSystem,
                     EventBus* eventBus,
                     TransactionManager* transactionManager,
-                    const std::string& kioskType);
+                    const std::string& kioskType,
+                    KioskState* kioskState,
+                    DecisionMediator* decisionMediator,
+                    TransactionCaretaker* caretaker,
+                    FailureHandler* failureHandler);
 
     bool handlePurchase(int productId, int quantity, const std::string& paymentMethod);
+    void handleRefund(int productId, int quantity);
     void handleRestock(int productId, int quantity);
     void handleDiagnostics();
     void showProducts() const;
     void showTransactionHistory() const;
     std::string getKioskType() const;
+    void setState(KioskState* state);
 };
 
 #endif
