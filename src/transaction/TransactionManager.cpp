@@ -41,3 +41,6 @@ void TransactionManager::showTransactions() const {
                   << "\n";
     }
 }
+const std::vector<Transaction>& TransactionManager::getTransactions() const {
+    return transactions;
+}

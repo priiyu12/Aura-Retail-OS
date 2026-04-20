@@ -21,6 +21,7 @@ public:
 
     void updateTransactionStatus(int transactionId, const std::string& status);
     void showTransactions() const;
+    const std::vector<Transaction>& getTransactions() const;
 };
 
 #endif
