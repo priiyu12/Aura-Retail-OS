@@ -3,9 +3,9 @@
 #include "../../include/pricing/DiscountPricing.h"
 
 void UniversityKioskFactory::setupInventory(InventorySystem& inventory) {
-    inventory.addProduct(Product(301, "Earphones", 500.0, 6, 1));
-    inventory.addProduct(Product(302, "Notebook", 40.0, 12, 2));
-    inventory.addProduct(Product(303, "Charger", 700.0, 5, 1));
+    inventory.addProduct(Product(301, "Earphones", "Electronics", 500.0, 6, 1, false, false));
+    inventory.addProduct(Product(302, "Notebook", "Stationery", 40.0, 12, 2, false, true));
+    inventory.addProduct(Product(303, "Charger", "Electronics", 700.0, 5, 1, false, false));
 }
 
 PricingStrategy* UniversityKioskFactory::createPricingStrategy() {

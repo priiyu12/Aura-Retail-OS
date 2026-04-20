@@ -2,20 +2,46 @@
 #include <algorithm>
 
 Product::Product()
-    : productId(0), name(""), basePrice(0.0), stock(0),
-      reservedStock(0), faultyStock(0), lowStockThreshold(2) {}
+    : productId(0),
+      name(""),
+      category(""),
+      basePrice(0.0),
+      stock(0),
+      reservedStock(0),
+      faultyStock(0),
+      lowStockThreshold(2),
+      restricted(false),
+      essential(false) {}
 
-Product::Product(int productId, const std::string& name, double basePrice, int stock, int lowStockThreshold)
-    : productId(productId), name(name), basePrice(basePrice), stock(stock),
-      reservedStock(0), faultyStock(0), lowStockThreshold(lowStockThreshold) {}
+Product::Product(int productId,
+                 const std::string& name,
+                 const std::string& category,
+                 double basePrice,
+                 int stock,
+                 int lowStockThreshold,
+                 bool restricted,
+                 bool essential)
+    : productId(productId),
+      name(name),
+      category(category),
+      basePrice(basePrice),
+      stock(stock),
+      reservedStock(0),
+      faultyStock(0),
+      lowStockThreshold(lowStockThreshold),
+      restricted(restricted),
+      essential(essential) {}
 
 int Product::getProductId() const { return productId; }
 std::string Product::getName() const { return name; }
+std::string Product::getCategory() const { return category; }
 double Product::getBasePrice() const { return basePrice; }
 int Product::getStock() const { return stock; }
 int Product::getReservedStock() const { return reservedStock; }
 int Product::getFaultyStock() const { return faultyStock; }
 int Product::getLowStockThreshold() const { return lowStockThreshold; }
+bool Product::isRestricted() const { return restricted; }
+bool Product::isEssential() const { return essential; }
 
 int Product::getAvailableStock() const {
     return stock - reservedStock - faultyStock;
