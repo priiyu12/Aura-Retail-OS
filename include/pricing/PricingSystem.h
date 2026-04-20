@@ -9,6 +9,7 @@ private:
 
 public:
     PricingSystem(PricingStrategy* strategy = nullptr);
+
     void setStrategy(PricingStrategy* strategy);
     double computePrice(double basePrice, int quantity);
 };
