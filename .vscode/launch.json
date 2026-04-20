@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "lldb",
+      "request": "launch",
+      "args": [],
+      "cwd": "/Users/priyashah/Desktop/Aura-Retail-OS",
+      "program": "/Users/priyashah/Desktop/Aura-Retail-OS/build/Debug/outDebug"
+    }
+  ]
+}
