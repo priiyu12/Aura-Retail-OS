@@ -3,9 +3,9 @@
 #include "../../include/pricing/StandardPricing.h"
 
 void MetroKioskFactory::setupInventory(InventorySystem& inventory) {
-    inventory.addProduct(Product(201, "Water Bottle", 20.0, 15, 3));
-    inventory.addProduct(Product(202, "Snack Pack", 35.0, 10, 2));
-    inventory.addProduct(Product(203, "Umbrella", 150.0, 4, 1));
+    inventory.addProduct(Product(201, "Water Bottle", "Beverage", 20.0, 15, 3, false, true));
+    inventory.addProduct(Product(202, "Snack Pack", "Food", 35.0, 10, 2, false, true));
+    inventory.addProduct(Product(203, "Umbrella", "Travel", 150.0, 4, 1, false, false));
 }
 
 PricingStrategy* MetroKioskFactory::createPricingStrategy() {
