@@ -3,9 +3,9 @@
 #include "../../include/pricing/EmergencyPricing.h"
 
 void DisasterReliefKioskFactory::setupInventory(InventorySystem& inventory) {
-    inventory.addProduct(Product(401, "Emergency Kit", 250.0, 6, 2));
-    inventory.addProduct(Product(402, "Water Pack", 80.0, 10, 2));
-    inventory.addProduct(Product(403, "First Aid Box", 180.0, 5, 1));
+    inventory.addProduct(Produgit push origin mainct(401, "Emergency Kit", "Relief", 250.0, 6, 2, false, true));
+    inventory.addProduct(Product(402, "Water Pack", "Relief", 80.0, 10, 2, false, true));
+    inventory.addProduct(Product(403, "First Aid Box", "Relief", 180.0, 5, 1, false, true));
 }
 
 PricingStrategy* DisasterReliefKioskFactory::createPricingStrategy() {
