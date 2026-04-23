@@ -8,13 +8,16 @@ void CityMonitoringSystem::update(const Event& event) {
     }
 
     if (event.getEventName() == "LowStockEvent") {
-        std::cout << " [Action: refill planning suggested]";
+        std::cout << " [Action: refill planning suggested, bundle availability may also be affected]";
     }
     else if (event.getEventName() == "HardwareFailureEvent") {
         std::cout << " [Action: maintenance unit should inspect kiosk]";
     }
     else if (event.getEventName() == "PolicyViolationEvent") {
         std::cout << " [Action: rule enforcement triggered]";
+    }
+    else {
+        std::cout << " [Action: logging complete]";
     }
 
     std::cout << "\n";
