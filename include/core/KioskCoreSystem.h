@@ -45,21 +45,18 @@ public:
                     FailureHandler* failureHandler);
 
     bool handlePurchase(int productId, int quantity, const std::string& paymentMethod);
-<<<<<<< HEAD
-=======
     bool handleBundlePurchase(int bundleId, const std::string& paymentMethod);
->>>>>>> 07cba5d (Added inventory policy and connected it to core, also disaster factory and enhanced pricing system)
+
     void handleRefund(int productId, int quantity);
     void handleRestock(int productId, int quantity);
     void handleDiagnostics();
+
     void showProducts() const;
     void showTransactionHistory() const;
+
     std::string getKioskType() const;
     void setState(KioskState* state);
-<<<<<<< HEAD
-=======
     void setKioskType(const std::string& newKioskType);
->>>>>>> 07cba5d (Added inventory policy and connected it to core, also disaster factory and enhanced pricing system)
 };
 
 #endif

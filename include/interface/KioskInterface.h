@@ -13,6 +13,7 @@ public:
     KioskInterface(KioskCoreSystem* coreSystem);
 
     void purchaseItem(int productId, int quantity, const std::string& paymentMethod);
+    void purchaseBundle(int bundleId, const std::string& paymentMethod);
     void restockInventory(int productId, int quantity);
     void runDiagnostics();
     void displayProducts() const;

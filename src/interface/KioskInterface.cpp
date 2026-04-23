@@ -3,11 +3,16 @@
 #include "../../include/commands/PurchaseCommand.h"
 #include "../../include/commands/RestockCommand.h"
 
-KioskInterface::KioskInterface(KioskCoreSystem* coreSystem) : coreSystem(coreSystem) {}
+KioskInterface::KioskInterface(KioskCoreSystem* coreSystem)
+    : coreSystem(coreSystem) {}
 
 void KioskInterface::purchaseItem(int productId, int quantity, const std::string& paymentMethod) {
     PurchaseCommand command(coreSystem, productId, quantity, paymentMethod);
     command.execute();
+}
+
+void KioskInterface::purchaseBundle(int bundleId, const std::string& paymentMethod) {
+    coreSystem->handleBundlePurchase(bundleId, paymentMethod);
 }
 
 void KioskInterface::restockInventory(int productId, int quantity) {
