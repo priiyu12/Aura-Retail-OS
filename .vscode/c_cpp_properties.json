@@ -1,16 +1,17 @@
 {
-  "configurations": [
-    {
-      "name": "macos-clang-arm64",
-      "includePath": [
-        "${workspaceFolder}/**"
-      ],
-      "defines": [],
-      "compilerPath": "/usr/bin/clang",
-      "cStandard": "c17",
-      "cppStandard": "c++14",
-      "intelliSenseMode": "macos-clang-arm64"
-    }
-  ],
-  "version": 4
+    "configurations": [
+        {
+            "name": "macos-clang-arm64",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/Users/prii/Desktop/DAU/sem2/projects/LocalOOP/include/inventory"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/clang",
+            "cStandard": "c17",
+            "cppStandard": "c++14",
+            "intelliSenseMode": "macos-clang-arm64"
+        }
+    ],
+    "version": 4
 }
