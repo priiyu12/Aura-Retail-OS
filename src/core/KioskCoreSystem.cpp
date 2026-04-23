@@ -30,34 +30,37 @@ KioskCoreSystem::KioskCoreSystem(InventorySystem* inventorySystem,
       failureHandler(failureHandler) {}
 
 bool KioskCoreSystem::handlePurchase(int productId, int quantity, const std::string& paymentMethod) {
+
     std::cout << "[CORE] Purchase request received.\n";
     std::cout << "[STATUS] Kiosk Type: " << kioskType << "\n";
     std::cout << "[STATUS] Current Mode: " << kioskState->getStateName() << "\n";
-<<<<<<< HEAD
-
-    if (!decisionMediator->canProcessPurchase(kioskState)) {
-        std::cout << "[STATE] Purchase not allowed in current mode: "
-                  << kioskState->getStateName() << "\n";
-=======
     std::cout << "[ENVIRONMENT] " << inventoryPolicy->getEnvironmentNote(kioskType) << "\n";
 
     if (!decisionMediator->canProcessPurchase(kioskState)) {
         std::string msg = "Purchase blocked because current mode is " + kioskState->getStateName();
         std::cout << "[STATE] " << msg << "\n";
+
         PolicyViolationEvent violationEvent(msg);
         eventBus->publish(violationEvent);
->>>>>>> 07cba5d (Added inventory policy and connected it to core, also disaster factory and enhanced pricing system)
         return false;
     }
 
     Product* product = inventorySystem->getProduct(productId);
+
     if (product == nullptr) {
         std::cout << "[CORE] Product not found.\n";
         return false;
     }
 
     std::string reason;
-    if (!inventoryPolicy->validatePurchase(kioskType, *product, quantity, kioskState->getStateName(), reason)) {
+
+    if (!inventoryPolicy->validatePurchase(
+            kioskType,
+            *product,
+            quantity,
+            kioskState->getStateName(),
+            reason)) {
+
         std::cout << "[POLICY] " << reason << "\n";
         PolicyViolationEvent violationEvent(reason);
         eventBus->publish(violationEvent);
@@ -73,47 +76,47 @@ bool KioskCoreSystem::handlePurchase(int productId, int quantity, const std::str
         TransactionSnapshot(
             productId,
             product->getStock(),
-            product->getReservedStock()
-        )
-    );
+            product->getReservedStock()));
 
     if (!inventorySystem->reserveItem(productId, quantity)) {
         std::cout << "[CORE] Failed to reserve item.\n";
         return false;
     }
 
-<<<<<<< HEAD
     double totalPrice = pricingSystem->computePrice(product->getBasePrice(), quantity);
-=======
-   double totalPrice = pricingSystem->computePrice(product->getBasePrice(), quantity);
->>>>>>> 07cba5d (Added inventory policy and connected it to core, also disaster factory and enhanced pricing system)
 
     int transactionId = transactionManager->createTransaction(
-        "PURCHASE", productId, quantity, totalPrice, paymentMethod, "PENDING"
-    );
+        "PURCHASE",
+        productId,
+        quantity,
+        totalPrice,
+        paymentMethod,
+        "PENDING");
 
     std::cout << pricingSystem->getPricingExplanation(product->getBasePrice(), quantity) << "\n";
     std::cout << "[PRICING] Final price: " << totalPrice << "\n";
 
     if (!paymentSystem->processPayment(totalPrice, paymentMethod)) {
+
         inventorySystem->releaseItem(productId, quantity);
         transactionManager->updateTransactionStatus(transactionId, "FAILED_PAYMENT");
+
         std::cout << "[CORE] Payment failed. Reserved stock released.\n";
         return false;
     }
 
     if (!hardwareLayer->dispenseItem(productId, quantity)) {
+
         inventorySystem->releaseItem(productId, quantity);
         transactionManager->updateTransactionStatus(transactionId, "FAILED_HARDWARE");
 
         failureHandler->handle(
-            "Dispense failure for product ID " + std::to_string(productId)
-        );
+            "Dispense failure for product ID " + std::to_string(productId));
 
         HardwareFailureEvent failureEvent(
             "Dispensing failed for product ID " + std::to_string(productId) +
-            ". Reserved stock released safely."
-        );
+            ". Reserved stock released safely.");
+
         eventBus->publish(failureEvent);
 
         std::cout << "[RECOVERY] Hardware failure handled safely.\n";
@@ -121,23 +124,30 @@ bool KioskCoreSystem::handlePurchase(int productId, int quantity, const std::str
     }
 
     if (!inventorySystem->confirmPurchase(productId, quantity)) {
-        transactionManager->updateTransactionStatus(transactionId, "FAILED_CONFIRMATION");
+
+        transactionManager->updateTransactionStatus(
+            transactionId,
+            "FAILED_CONFIRMATION");
+
         std::cout << "[CORE] Failed to confirm purchase.\n";
         return false;
     }
 
     transactionManager->updateTransactionStatus(transactionId, "SUCCESS");
+
     std::cout << "[CORE] Purchase completed successfully.\n";
 
     if (inventorySystem->isLowStock(productId)) {
+
         LowStockEvent lowStockEvent(
-            "Low stock detected for product ID " + std::to_string(productId) +
-            ". Refill recommended."
-        );
+            "Low stock detected for product ID " +
+            std::to_string(productId) +
+            ". Refill recommended.");
+
         eventBus->publish(lowStockEvent);
     }
 
-        std::cout << "\n===== TRANSACTION SUMMARY =====\n";
+    std::cout << "\n===== TRANSACTION SUMMARY =====\n";
     std::cout << "Transaction ID: " << transactionId << "\n";
     std::cout << "Kiosk Type: " << kioskType << "\n";
     std::cout << "Mode: " << kioskState->getStateName() << "\n";
@@ -152,34 +162,40 @@ bool KioskCoreSystem::handlePurchase(int productId, int quantity, const std::str
     return true;
 }
 
-<<<<<<< HEAD
-=======
 bool KioskCoreSystem::handleBundlePurchase(int bundleId, const std::string& paymentMethod) {
+
     std::cout << "[CORE] Bundle purchase request received.\n";
     std::cout << "[STATUS] Kiosk Type: " << kioskType << "\n";
     std::cout << "[STATUS] Current Mode: " << kioskState->getStateName() << "\n";
 
     if (!decisionMediator->canProcessPurchase(kioskState)) {
-        std::string msg = "Bundle purchase blocked because current mode is " + kioskState->getStateName();
+
+        std::string msg =
+            "Bundle purchase blocked because current mode is " +
+            kioskState->getStateName();
+
         std::cout << "[STATE] " << msg << "\n";
+
         PolicyViolationEvent violationEvent(msg);
         eventBus->publish(violationEvent);
+
         return false;
     }
 
     Bundle* bundle = inventorySystem->getBundle(bundleId);
+
     if (bundle == nullptr) {
         std::cout << "[CORE] Bundle not found.\n";
         return false;
     }
 
     if (!inventorySystem->checkBundleAvailability(bundleId)) {
-        std::cout << "[CORE] Bundle unavailable due to insufficient stock in one or more items.\n";
+        std::cout << "[CORE] Bundle unavailable due to insufficient stock.\n";
         return false;
     }
 
     if (!inventorySystem->reserveBundle(bundleId)) {
-        std::cout << "[CORE] Failed to reserve bundle items.\n";
+        std::cout << "[CORE] Failed to reserve bundle.\n";
         return false;
     }
 
@@ -187,93 +203,118 @@ bool KioskCoreSystem::handleBundlePurchase(int bundleId, const std::string& paym
     double totalPrice = pricingSystem->computePrice(basePrice, 1);
 
     int transactionId = transactionManager->createTransaction(
-        "BUNDLE_PURCHASE", bundleId, 1, totalPrice, paymentMethod, "PENDING"
-    );
-
-    std::cout << pricingSystem->getPricingExplanation(basePrice, 1) << "\n";
-    std::cout << "[PRICING] Final bundle price: " << totalPrice << "\n";
+        "BUNDLE_PURCHASE",
+        bundleId,
+        1,
+        totalPrice,
+        paymentMethod,
+        "PENDING");
 
     if (!paymentSystem->processPayment(totalPrice, paymentMethod)) {
+
         inventorySystem->releaseBundle(bundleId);
-        transactionManager->updateTransactionStatus(transactionId, "FAILED_PAYMENT");
-        std::cout << "[CORE] Payment failed. Reserved bundle items released.\n";
+
+        transactionManager->updateTransactionStatus(
+            transactionId,
+            "FAILED_PAYMENT");
+
+        std::cout << "[CORE] Payment failed.\n";
         return false;
     }
 
     if (!inventorySystem->confirmBundlePurchase(bundleId)) {
-        transactionManager->updateTransactionStatus(transactionId, "FAILED_CONFIRMATION");
+
+        transactionManager->updateTransactionStatus(
+            transactionId,
+            "FAILED_CONFIRMATION");
+
         std::cout << "[CORE] Failed to confirm bundle purchase.\n";
         return false;
     }
 
     transactionManager->updateTransactionStatus(transactionId, "SUCCESS");
 
-    std::cout << "\n===== BUNDLE TRANSACTION SUMMARY =====\n";
-    std::cout << "Transaction ID: " << transactionId << "\n";
-    std::cout << "Kiosk Type: " << kioskType << "\n";
-    std::cout << "Bundle: " << bundle->getName() << "\n";
-    std::cout << "Payment Method: " << paymentMethod << "\n";
-    std::cout << "Final Price: " << totalPrice << "\n";
-    std::cout << "Status: SUCCESS\n";
-    std::cout << "======================================\n";
+    std::cout << "[CORE] Bundle purchase successful.\n";
 
     return true;
 }
 
->>>>>>> 07cba5d (Added inventory policy and connected it to core, also disaster factory and enhanced pricing system)
 void KioskCoreSystem::handleRefund(int productId, int quantity) {
+
     inventorySystem->restockItem(productId, quantity);
 
     int transactionId = transactionManager->createTransaction(
-        "REFUND", productId, quantity, 0.0, "REFUND", "SUCCESS"
-    );
+        "REFUND",
+        productId,
+        quantity,
+        0.0,
+        "REFUND",
+        "SUCCESS");
 
-    std::cout << "[CORE] Refund processed. Product restocked. Transaction ID: "
+    std::cout << "[CORE] Refund processed. Transaction ID: "
               << transactionId << "\n";
 }
 
 void KioskCoreSystem::handleRestock(int productId, int quantity) {
+
     if (!decisionMediator->canProcessRestock(kioskState)) {
-<<<<<<< HEAD
-        std::cout << "[STATE] Restock not allowed in current mode: "
-                  << kioskState->getStateName() << "\n";
-=======
-        std::string msg = "Restock blocked because current mode is " + kioskState->getStateName();
+
+        std::string msg =
+            "Restock blocked because current mode is " +
+            kioskState->getStateName();
+
         std::cout << "[STATE] " << msg << "\n";
+
         PolicyViolationEvent violationEvent(msg);
         eventBus->publish(violationEvent);
->>>>>>> 07cba5d (Added inventory policy and connected it to core, also disaster factory and enhanced pricing system)
+
         return;
     }
 
     std::string reason;
-    if (!inventoryPolicy->validateRestock(kioskType, quantity, reason)) {
+
+    if (!inventoryPolicy->validateRestock(
+            kioskType,
+            quantity,
+            reason)) {
+
         std::cout << "[ADMIN] " << reason << "\n";
+
         PolicyViolationEvent violationEvent(reason);
         eventBus->publish(violationEvent);
+
         return;
     }
 
     inventorySystem->restockItem(productId, quantity);
 
     int transactionId = transactionManager->createTransaction(
-        "RESTOCK", productId, quantity, 0.0, "ADMIN", "SUCCESS"
-    );
+        "RESTOCK",
+        productId,
+        quantity,
+        0.0,
+        "ADMIN",
+        "SUCCESS");
 
     std::cout << "[ADMIN] Product " << productId
-              << " restocked by " << quantity
-              << " units. Transaction ID: " << transactionId << "\n";
+              << " restocked by "
+              << quantity
+              << " units. Transaction ID: "
+              << transactionId << "\n";
 }
 
 void KioskCoreSystem::handleDiagnostics() {
+
     if (!decisionMediator->canRunDiagnostics(kioskState)) {
+
         std::cout << "[STATE] Diagnostics not allowed in current mode: "
                   << kioskState->getStateName() << "\n";
+
         return;
     }
 
-    std::cout << "[STATUS] Running diagnostics for " << kioskType
-              << " kiosk in mode " << kioskState->getStateName() << "...\n";
+    std::cout << "[STATUS] Running diagnostics...\n";
+
     hardwareLayer->runDiagnostics();
 }
 
@@ -291,11 +332,8 @@ std::string KioskCoreSystem::getKioskType() const {
 
 void KioskCoreSystem::setState(KioskState* state) {
     kioskState = state;
-<<<<<<< HEAD
-=======
 }
 
 void KioskCoreSystem::setKioskType(const std::string& newKioskType) {
     kioskType = newKioskType;
->>>>>>> 07cba5d (Added inventory policy and connected it to core, also disaster factory and enhanced pricing system)
 }
