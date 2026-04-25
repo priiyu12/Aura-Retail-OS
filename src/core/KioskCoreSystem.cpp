@@ -4,22 +4,24 @@
 #include <iostream>
 
 KioskCoreSystem::KioskCoreSystem(InventorySystem* inventorySystem,
+                                 InventoryPolicy* inventoryPolicy,
                                  PaymentSystem* paymentSystem,
                                  HardwareLayer* hardwareLayer,
                                  PricingSystem* pricingSystem,
                                  EventBus* eventBus,
+                                 TransactionManager* transactionManager,
                                  const std::string& kioskType)
     : inventorySystem(inventorySystem),
+      inventoryPolicy(inventoryPolicy),
       paymentSystem(paymentSystem),
       hardwareLayer(hardwareLayer),
       pricingSystem(pricingSystem),
       eventBus(eventBus),
+      transactionManager(transactionManager),
       kioskType(kioskType) {}
 
 bool KioskCoreSystem::handlePurchase(int productId, int quantity, const std::string& paymentMethod) {
     std::cout << "[CORE] Purchase request received.\n";
-    std::cout << "[STATUS] Kiosk Type: " << kioskType << "\n";
-    std::cout << "[STATUS] Kiosk Status: ACTIVE\n";
 
     Product* product = inventorySystem->getProduct(productId);
     if (product == nullptr) {
@@ -27,14 +29,9 @@ bool KioskCoreSystem::handlePurchase(int productId, int quantity, const std::str
         return false;
     }
 
-    // Environment-specific rules
-    if (kioskType == "Hospital" && productId == 102 && quantity > 2) {
-        std::cout << "[POLICY] Hospital kiosk allows maximum 2 units of Prescription Medicine per transaction.\n";
-        return false;
-    }
-
-    if (kioskType == "Disaster Relief" && quantity > 2) {
-        std::cout << "[POLICY] Disaster Relief kiosk allows maximum 2 essential items per transaction.\n";
+    std::string reason;
+    if (!inventoryPolicy->validatePurchase(kioskType, *product, quantity, reason)) {
+        std::cout << "[POLICY] " << reason << "\n";
         return false;
     }
 
@@ -49,31 +46,40 @@ bool KioskCoreSystem::handlePurchase(int productId, int quantity, const std::str
     }
 
     double totalPrice = pricingSystem->computePrice(product->getBasePrice(), quantity);
+    int transactionId = transactionManager->createTransaction(
+        "PURCHASE", productId, quantity, totalPrice, paymentMethod, "PENDING"
+    );
+
     std::cout << "[PRICING] Final price: " << totalPrice << "\n";
 
     if (!paymentSystem->processPayment(totalPrice, paymentMethod)) {
-        std::cout << "[CORE] Payment failed. Reserved stock released.\n";
         inventorySystem->releaseItem(productId, quantity);
+        transactionManager->updateTransactionStatus(transactionId, "FAILED_PAYMENT");
+        std::cout << "[CORE] Payment failed. Reserved stock released.\n";
         return false;
     }
 
     if (!hardwareLayer->dispenseItem(productId, quantity)) {
-        std::cout << "[RECOVERY] Dispense failed. Reserved stock released safely.\n";
         inventorySystem->releaseItem(productId, quantity);
+        transactionManager->updateTransactionStatus(transactionId, "FAILED_HARDWARE");
 
         HardwareFailureEvent failureEvent(
             "Dispensing failed for product ID " + std::to_string(productId) +
-            ". Maintenance unit has been notified."
+            ". Reserved stock released. Technician attention required."
         );
         eventBus->publish(failureEvent);
+
+        std::cout << "[RECOVERY] Hardware failure handled safely.\n";
         return false;
     }
 
     if (!inventorySystem->confirmPurchase(productId, quantity)) {
+        transactionManager->updateTransactionStatus(transactionId, "FAILED_CONFIRMATION");
         std::cout << "[CORE] Failed to confirm purchase.\n";
         return false;
     }
 
+    transactionManager->updateTransactionStatus(transactionId, "SUCCESS");
     std::cout << "[CORE] Purchase completed successfully.\n";
 
     if (inventorySystem->isLowStock(productId)) {
@@ -84,8 +90,8 @@ bool KioskCoreSystem::handlePurchase(int productId, int quantity, const std::str
         eventBus->publish(lowStockEvent);
     }
 
-    // Transaction summary
     std::cout << "\n===== TRANSACTION SUMMARY =====\n";
+    std::cout << "Transaction ID: " << transactionId << "\n";
     std::cout << "Kiosk Type: " << kioskType << "\n";
     std::cout << "Product: " << product->getName() << "\n";
     std::cout << "Quantity: " << quantity << "\n";
@@ -97,18 +103,35 @@ bool KioskCoreSystem::handlePurchase(int productId, int quantity, const std::str
     return true;
 }
 
+void KioskCoreSystem::handleRestock(int productId, int quantity) {
+    std::string reason;
+    if (!inventoryPolicy->validateRestock(quantity, reason)) {
+        std::cout << "[ADMIN] " << reason << "\n";
+        return;
+    }
+
+    inventorySystem->restockItem(productId, quantity);
+
+    int transactionId = transactionManager->createTransaction(
+        "RESTOCK", productId, quantity, 0.0, "ADMIN", "SUCCESS"
+    );
+
+    std::cout << "[ADMIN] Product " << productId
+              << " restocked by " << quantity
+              << " units. Transaction ID: " << transactionId << "\n";
+}
+
 void KioskCoreSystem::handleDiagnostics() {
     std::cout << "[STATUS] Running diagnostics for " << kioskType << " kiosk...\n";
     hardwareLayer->runDiagnostics();
 }
 
-void KioskCoreSystem::handleRestock(int productId, int quantity) {
-    inventorySystem->restockItem(productId, quantity);
-    std::cout << "[ADMIN] Product " << productId << " restocked by " << quantity << " units.\n";
-}
-
 void KioskCoreSystem::showProducts() const {
     inventorySystem->showInventory();
+}
+
+void KioskCoreSystem::showTransactionHistory() const {
+    transactionManager->showTransactions();
 }
 
 std::string KioskCoreSystem::getKioskType() const {
