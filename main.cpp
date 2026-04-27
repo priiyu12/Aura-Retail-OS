@@ -3,6 +3,7 @@
 
 #include "include/models/Product.h"
 #include "include/inventory/InventorySystem.h"
+#include "include/inventory/InventoryPolicy.h"
 #include "include/payment/PaymentSystem.h"
 #include "include/hardware/HardwareLayer.h"
 #include "include/pricing/StandardPricing.h"
@@ -11,6 +12,7 @@
 #include "include/monitoring/CityMonitoringSystem.h"
 #include "include/core/KioskCoreSystem.h"
 #include "include/interface/KioskInterface.h"
+#include "include/transaction/TransactionManager.h"
 
 void setupHospitalKiosk(InventorySystem& inventory) {
     inventory.addProduct(Product(101, "Paracetamol", 20.0, 10, 2));
@@ -36,71 +38,73 @@ void setupDisasterReliefKiosk(InventorySystem& inventory) {
     inventory.addProduct(Product(403, "First Aid Box", 180.0, 5, 1));
 }
 
-void initializeAllKiosks(
-    InventorySystem& hospitalInventory,
-    InventorySystem& metroInventory,
-    InventorySystem& universityInventory,
-    InventorySystem& disasterInventory
-) {
-    setupHospitalKiosk(hospitalInventory);
-    setupMetroKiosk(metroInventory);
-    setupUniversityKiosk(universityInventory);
-    setupDisasterReliefKiosk(disasterInventory);
-}
-
-InventorySystem* getInventoryByChoice(
-    int choice,
-    InventorySystem& hospitalInventory,
-    InventorySystem& metroInventory,
-    InventorySystem& universityInventory,
-    InventorySystem& disasterInventory
-) {
+std::string loadKioskProducts(int choice, InventorySystem& inventory) {
     switch (choice) {
-        case 1: return &hospitalInventory;
-        case 2: return &metroInventory;
-        case 3: return &universityInventory;
-        case 4: return &disasterInventory;
-        default: return &metroInventory;
-    }
-}
-
-std::string getKioskTypeByChoice(int choice) {
-    switch (choice) {
-        case 1: return "Hospital";
-        case 2: return "Metro";
-        case 3: return "University";
-        case 4: return "Disaster Relief";
-        default: return "Metro";
+        case 1:
+            setupHospitalKiosk(inventory);
+            std::cout << "\n[SETUP] Hospital kiosk loaded.\n";
+            return "Hospital";
+        case 2:
+            setupMetroKiosk(inventory);
+            std::cout << "\n[SETUP] Metro kiosk loaded.\n";
+            return "Metro";
+        case 3:
+            setupUniversityKiosk(inventory);
+            std::cout << "\n[SETUP] University kiosk loaded.\n";
+            return "University";
+        case 4:
+            setupDisasterReliefKiosk(inventory);
+            std::cout << "\n[SETUP] Disaster Relief kiosk loaded.\n";
+            return "Disaster Relief";
+        default:
+            std::cout << "\nInvalid choice. Defaulting to Metro kiosk.\n";
+            setupMetroKiosk(inventory);
+            return "Metro";
     }
 }
 
 int main() {
+    InventorySystem inventory;
+    InventoryPolicy policy;
     PaymentSystem payment;
     HardwareLayer hardware;
     StandardPricing standardPricing;
     PricingSystem pricing(&standardPricing);
     EventBus eventBus;
     CityMonitoringSystem monitoring;
+    TransactionManager transactionManager;
 
     eventBus.subscribe(&monitoring);
 
-    // Shared inventories for all modes
-    InventorySystem hospitalInventory;
-    InventorySystem metroInventory;
-    InventorySystem universityInventory;
-    InventorySystem disasterInventory;
+    std::cout << "===== Zephyrus Retail OS =====\n";
+    std::cout << "Select kiosk type:\n";
+    std::cout << "1. Hospital\n";
+    std::cout << "2. Metro\n";
+    std::cout << "3. University\n";
+    std::cout << "4. Disaster Relief\n";
+    std::cout << "Enter choice: ";
 
-    initializeAllKiosks(
-        hospitalInventory,
-        metroInventory,
-        universityInventory,
-        disasterInventory
+    int kioskChoice;
+    std::cin >> kioskChoice;
+
+    std::string kioskType = loadKioskProducts(kioskChoice, inventory);
+
+    KioskCoreSystem core(
+        &inventory,
+        &policy,
+        &payment,
+        &hardware,
+        &pricing,
+        &eventBus,
+        &transactionManager,
+        kioskType
     );
 
-    int mainChoice;
+    KioskInterface kiosk(&core);
 
+    int mainChoice;
     do {
-        std::cout << "\n===== Aura Retail OS =====\n";
+        std::cout << "\n===== MAIN MENU =====\n";
         std::cout << "1. User Mode\n";
         std::cout << "2. Admin Mode\n";
         std::cout << "0. Exit\n";
@@ -108,43 +112,22 @@ int main() {
         std::cin >> mainChoice;
 
         if (mainChoice == 1) {
-            int kioskChoice;
-            std::cout << "\nSelect kiosk type:\n";
-            std::cout << "1. Hospital\n";
-            std::cout << "2. Metro\n";
-            std::cout << "3. University\n";
-            std::cout << "4. Disaster Relief\n";
-            std::cout << "Enter choice: ";
-            std::cin >> kioskChoice;
-
-            InventorySystem* inventory = getInventoryByChoice(
-                kioskChoice,
-                hospitalInventory,
-                metroInventory,
-                universityInventory,
-                disasterInventory
-            );
-
-            std::string kioskType = getKioskTypeByChoice(kioskChoice);
-
-            std::cout << "\n[SETUP] " << kioskType << " kiosk selected.\n";
-
-            KioskCoreSystem core(inventory, &payment, &hardware, &pricing, &eventBus, kioskType);
-            KioskInterface kiosk(&core);
-
             int userOption;
             do {
                 std::cout << "\n===== USER MODE =====\n";
                 std::cout << "1. Show Products\n";
-                std::cout << "2. Purchase Product\n";
+                std::cout << "2. Simulate Hardware Failure on Next Dispense\n";
+                std::cout << "3. Purchase Product\n";
                 std::cout << "0. Back\n";
                 std::cout << "Enter option: ";
                 std::cin >> userOption;
 
                 if (userOption == 1) {
                     kiosk.displayProducts();
-                }
-                else if (userOption == 2) {
+                } else if (userOption == 2) {
+                    hardware.setFailNextDispense(true);
+                    std::cout << "[TEST] Next dispense will fail.\n";
+                } else if (userOption == 3) {
                     int productId, quantity;
                     std::string paymentMethod;
 
@@ -160,11 +143,9 @@ int main() {
                     std::cin >> paymentMethod;
 
                     kiosk.purchaseItem(productId, quantity, paymentMethod);
-                }
-                else if (userOption == 0) {
+                } else if (userOption == 0) {
                     std::cout << "Returning to main menu...\n";
-                }
-                else {
+                } else {
                     std::cout << "Invalid option.\n";
                 }
 
@@ -183,47 +164,21 @@ int main() {
 
             std::cout << "[ADMIN] Login successful.\n";
 
-            int kioskChoice;
-            std::cout << "\nSelect kiosk type for admin operations:\n";
-            std::cout << "1. Hospital\n";
-            std::cout << "2. Metro\n";
-            std::cout << "3. University\n";
-            std::cout << "4. Disaster Relief\n";
-            std::cout << "Enter choice: ";
-            std::cin >> kioskChoice;
-
-            InventorySystem* inventory = getInventoryByChoice(
-                kioskChoice,
-                hospitalInventory,
-                metroInventory,
-                universityInventory,
-                disasterInventory
-            );
-
-            std::string kioskType = getKioskTypeByChoice(kioskChoice);
-
-            std::cout << "\n[SETUP] " << kioskType << " kiosk selected.\n";
-
-            KioskCoreSystem core(inventory, &payment, &hardware, &pricing, &eventBus, kioskType);
-            KioskInterface kiosk(&core);
-
             int adminOption;
             do {
                 std::cout << "\n===== ADMIN MODE =====\n";
                 std::cout << "1. Show Inventory\n";
                 std::cout << "2. Restock Item\n";
                 std::cout << "3. Run Diagnostics\n";
-                std::cout << "4. Simulate Hardware Failure on Next Dispense\n";
+                std::cout << "4. Show Transaction History\n";
                 std::cout << "0. Back\n";
                 std::cout << "Enter option: ";
                 std::cin >> adminOption;
 
                 if (adminOption == 1) {
                     kiosk.displayProducts();
-                }
-                else if (adminOption == 2) {
+                } else if (adminOption == 2) {
                     int productId, quantity;
-
                     kiosk.displayProducts();
 
                     std::cout << "\nEnter product ID to restock: ";
@@ -233,18 +188,13 @@ int main() {
                     std::cin >> quantity;
 
                     kiosk.restockInventory(productId, quantity);
-                }
-                else if (adminOption == 3) {
+                } else if (adminOption == 3) {
                     kiosk.runDiagnostics();
-                }
-                else if (adminOption == 4) {
-                    hardware.setFailNextDispense(true);
-                    std::cout << "[TEST] Next dispense will fail.\n";
-                }
-                else if (adminOption == 0) {
+                } else if (adminOption == 4) {
+                    kiosk.displayTransactionHistory();
+                } else if (adminOption == 0) {
                     std::cout << "Returning to main menu...\n";
-                }
-                else {
+                } else {
                     std::cout << "Invalid option.\n";
                 }
 
@@ -256,7 +206,7 @@ int main() {
         }
 
         else {
-            std::cout << "Invalid choice.\n";
+            std::cout << "Invalid option.\n";
         }
 
     } while (mainChoice != 0);
