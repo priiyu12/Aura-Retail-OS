@@ -135,6 +135,8 @@ int main() {
                 std::cout << "4. Show Bundles\n";
                 std::cout << "5. Purchase Bundle\n";
                 std::cout << "0. Back\n";
+                std::cout << "Enter option: ";
+                std::cin >> userOption;
 
                 if (userOption == 1) {
                     kiosk.displayProducts();
@@ -249,31 +251,18 @@ int main() {
                     if (modeChoice == 1) {
                         currentState = &activeState;
                         CentralRegistry::getInstance().setCurrentMode("ACTIVE");
-                    } 
+                    }
                     else if (modeChoice == 2) {
                         currentState = &powerSavingState;
                         CentralRegistry::getInstance().setCurrentMode("POWER_SAVING");
-                    } 
+                    }
                     else if (modeChoice == 3) {
                         currentState = &maintenanceState;
                         CentralRegistry::getInstance().setCurrentMode("MAINTENANCE");
-                    } 
+                    }
                     else if (modeChoice == 4) {
                         currentState = &emergencyLockdownState;
                         CentralRegistry::getInstance().setCurrentMode("EMERGENCY_LOCKDOWN");
-                    } 
-                    else if (adminOption == 7) {
-                        inventoryStorage.saveInventory(inventory, "data/inventory.csv");
-                    }
-                    else if (adminOption == 8) {
-                        transactionStorage.saveTransactions(transactionManager, "data/transactions.csv");
-                    }
-                    else if (adminOption == 9) {
-                        configStorage.saveConfig(
-                            CentralRegistry::getInstance().getActiveKioskType(),
-                            CentralRegistry::getInstance().getCurrentMode(),
-                            "data/config.txt"
-                        );
                     }
                     else {
                         std::cout << "Invalid mode choice.\n";
@@ -314,6 +303,19 @@ int main() {
                     std::cout << "[ADMIN] Kiosk environment switched to: "
                               << newKioskType << "\n";
                     std::cout << "[ADMIN] Active pricing strategy will now follow the selected environment.\n";
+                }
+                else if (adminOption == 7) {
+                    inventoryStorage.saveInventory(inventory, "data/inventory.csv");
+                }
+                else if (adminOption == 8) {
+                    transactionStorage.saveTransactions(transactionManager, "data/transactions.csv");
+                }
+                else if (adminOption == 9) {
+                    configStorage.saveConfig(
+                        CentralRegistry::getInstance().getActiveKioskType(),
+                        CentralRegistry::getInstance().getCurrentMode(),
+                        "data/config.txt"
+                    );
                 }
                 else if (adminOption == 0) {
                     std::cout << "Returning to main menu...\n";

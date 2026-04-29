@@ -1,8 +1,9 @@
 #include "../../include/persistence/InventoryStorage.h"
+#include "../../include/inventory/InventorySystem.h"
 #include "../../include/models/Product.h"
 #include <fstream>
 #include <iostream>
-#include <vector>
+#include <map>
 
 bool InventoryStorage::saveInventory(const InventorySystem& inventory, const std::string& filename) const {
     std::ofstream file(filename);
@@ -18,15 +19,15 @@ bool InventoryStorage::saveInventory(const InventorySystem& inventory, const std
     for (const auto& pair : products) {
         const Product& product = pair.second;
         file << product.getProductId() << ","
-            << product.getName() << ","
-            << product.getCategory() << ","
-            << product.getBasePrice() << ","
-            << product.getStock() << ","
-            << product.getReservedStock() << ","
-            << product.getFaultyStock() << ","
-            << product.getLowStockThreshold() << ","
-            << product.isRestricted() << ","
-            << product.isEssential() << "\n";
+             << product.getName() << ","
+             << product.getCategory() << ","
+             << product.getBasePrice() << ","
+             << product.getStock() << ","
+             << product.getReservedStock() << ","
+             << product.getFaultyStock() << ","
+             << product.getLowStockThreshold() << ","
+             << product.isRestricted() << ","
+             << product.isEssential() << "\n";
     }
 
     file.close();
