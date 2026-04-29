@@ -330,3 +330,72 @@ data/             -> generated persistence files
 demo/             -> screenshots / demo media
 main.cpp          -> console simulation entry point
 README.md         -> project documentation
+```
+
+## Compile and Run
+
+### Prerequisites
+
+* C++ compiler supporting **C++17**
+
+### Compile the C++ Project
+
+```bash
+g++ -std=c++17 main.cpp \
+src/models/Product.cpp \
+src/models/Transaction.cpp \
+src/inventory/InventorySystem.cpp \
+src/inventory/InventoryPolicy.cpp \
+src/inventory/Bundle.cpp \
+src/payment/PaymentSystem.cpp \
+src/pricing/PricingSystem.cpp \
+src/pricing/StandardPricing.cpp \
+src/pricing/DiscountPricing.cpp \
+src/pricing/EmergencyPricing.cpp \
+src/hardware/HardwareLayer.cpp \
+src/hardware/FailureHandler.cpp \
+src/events/EventBus.cpp \
+src/monitoring/CityMonitoringSystem.cpp \
+src/core/KioskCoreSystem.cpp \
+src/core/DecisionMediator.cpp \
+src/core/CentralRegistry.cpp \
+src/interface/KioskInterface.cpp \
+src/commands/PurchaseCommand.cpp \
+src/commands/RestockCommand.cpp \
+src/commands/RefundCommand.cpp \
+src/transaction/TransactionManager.cpp \
+src/transaction/TransactionSnapshot.cpp \
+src/transaction/TransactionCaretaker.cpp \
+src/state/ActiveState.cpp \
+src/state/PowerSavingState.cpp \
+src/state/MaintenanceState.cpp \
+src/state/EmergencyLockdownState.cpp \
+src/factory/HospitalKioskFactory.cpp \
+src/factory/MetroKioskFactory.cpp \
+src/factory/UniversityKioskFactory.cpp \
+src/factory/DisasterReliefKioskFactory.cpp \
+src/persistence/InventoryStorage.cpp \
+src/persistence/TransactionStorage.cpp \
+src/persistence/ConfigStorage.cpp \
+-Iinclude -o kiosk_app
+```
+
+### Run the C++ Project
+
+Create the persistence output folder first:
+
+```bash
+mkdir -p data
+```
+
+#### macOS / Linux
+
+```bash
+./kiosk_app
+```
+
+#### Windows
+
+```bash
+kiosk_app.exe
+```
