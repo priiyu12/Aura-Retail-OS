@@ -1,214 +1,332 @@
-# Aura-Retail-OS — C++ Prototype
+# Zephyrus Retail OS
 
 ![Language](https://img.shields.io/badge/language-C++-blue)
-![Stage](https://img.shields.io/badge/stage-Subtask%202-green)
+![Frontend](https://img.shields.io/badge/frontend-React%20%2B%20Tailwind-4f46e5)
+![Stage](https://img.shields.io/badge/stage-Final%20Project-success)
+![OOP](https://img.shields.io/badge/focus-OOP%20%26%20Design%20Patterns-1d4ed8)
 
-A modular C++ prototype for an autonomous smart-city retail kiosk platform designed using object-oriented principles and design patterns.
+A modular smart-city retail kiosk platform built in **C++** using **Object-Oriented Programming principles** and multiple **design patterns**. The system supports multiple deployment environments, adaptive pricing, admin and user workflows, bundle purchases, event-driven monitoring, failure recovery, and persistence.
+
+---
 
 ## Project Overview
 
-Aura Retail OS is a smart retail kiosk system designed for multiple deployment environments:
-- Hospitals dispensing prescription medication
-- Metro stations selling daily essentials
-- University campuses selling electronics
-- Disaster zones distributing emergency supplies
+**Zephyrus Retail OS** is designed as an autonomous and extensible kiosk platform for different smart-city environments:
 
-This project is being developed as part of the **IT620 Object Oriented Programming Project**.
+- **Hospitals** dispensing prescription medication and hygiene essentials
+- **Metro stations** selling daily-use and travel products
+- **University campuses** selling electronics and stationery
+- **Disaster relief zones** distributing essential emergency supplies
+
+Although these kiosk environments share a common platform, they differ in:
+- product categories
+- pricing behavior
+- purchase restrictions
+- operational priorities
+- emergency handling rules
+
+This project was developed as part of the **IT620 Object Oriented Programming Project**.
+
+---
+
+## Final System Highlights
+
+The final system supports:
+
+- **User Mode** and **Admin Mode**
+- environment-specific kiosk setup
+- product and bundle purchase
+- dynamic pricing strategies
+- policy-based validation
+- hardware failure simulation
+- recovery chain handling
+- event-driven alerts
+- transaction history
+- system mode switching
+- kiosk environment switching without rerun
+- persistence of inventory, transaction, and config data
+- minimal clean frontend for presentation support
+
+---
+
+## Supported Kiosk Environments
+
+### 1. Hospital
+- medical essentials and hygiene products
+- restricted handling for prescription items
+- quantity limits for sensitive products
+
+### 2. Metro
+- fast daily-use and travel products
+- quick-service flow
+- lightweight purchase limits
+
+### 3. University
+- electronics and stationery
+- student-friendly discount pricing
+- study bundle support
+
+### 4. Disaster Relief
+- essential items only
+- emergency pricing
+- strict emergency purchase limits
+
+---
 
 ## Project Architecture Overview
 
-The system follows a layered and modular architecture to ensure scalability, maintainability, and clear separation of concerns.
+The system follows a layered modular architecture for scalability, maintainability, and low coupling.
 
-### Layers
+### 1. Presentation Layer
+- `KioskInterface`
+- Console Simulation
+- Minimal Frontend
 
-- **Interface Layer**
-  - `KioskInterface` (Facade Pattern)
-  - Provides simplified interaction for users and administrators
+### 2. Core Coordination Layer
+- `KioskCoreSystem`
+- `CentralRegistry`
+- `DecisionMediator`
 
-- **Core Layer**
-  - `KioskCoreSystem`
-  - Coordinates all subsystems and manages workflow
+### 3. Behavior Layer
+- Factory Module
+- State Module
+- Pricing Module
 
-- **Subsystems**
-  - Inventory System
-  - Payment System
-  - Hardware Layer
-  - Pricing System
-  - Event & Monitoring System
+### 4. Business Layer
+- Inventory Module
+- Transaction Module
+- Payment Module
 
-All subsystems interact through well-defined interfaces, ensuring low coupling and high cohesion across the system.
+### 5. System Services Layer
+- Hardware & Recovery Module
+- Event & Monitoring Module
+- Persistence Module
 
-## Current Stage
+---
 
-This repository currently represents **Subtask 2: Prototype Implementation**.
+## OOP Concepts Used
 
-At this stage, the project includes:
-- partial source code
-- selected design pattern implementation
-- a basic working simulation
-- structure for future expansion in the final submission
+The project strongly reflects the following OOP concepts:
 
-Some files are intentionally kept as placeholders and will be fully implemented in **Subtask 3**.
+- **Encapsulation**  
+  Product, transaction, inventory, and state-related data are kept inside dedicated classes and exposed through controlled methods.
 
-## Implemented Features in Subtask 2
+- **Abstraction**  
+  Interfaces and base classes such as `PricingStrategy`, `KioskState`, `KioskFactory`, `Command`, and `EventListener` hide implementation complexity.
 
-The current prototype supports:
+- **Inheritance**  
+  Multiple specialized classes extend shared abstractions, such as pricing strategies, kiosk states, factories, and events.
 
-- interactive kiosk selection
-- environment-specific product setup for all 4 kiosk types
-- inventory display and stock checking
-- purchase flow using user input
-- payment method handling
-- hardware dispensing simulation
-- low stock alert generation
-- hardware failure alert simulation
+- **Polymorphism**  
+  Different pricing, state, and factory implementations are used dynamically through base-type references.
+
+- **Low Coupling**  
+  Subsystems communicate through interfaces, mediator-based decisions, command execution, and an event bus instead of direct dependencies.
+
+- **Modularity**  
+  Each subsystem is implemented separately so the system remains extendable and easier to maintain.
+
+---
 
 ## Implemented Design Patterns
 
 ### 1. Facade Pattern
-Implemented using `KioskInterface` to provide simplified access to kiosk operations such as:
-- viewing products
-- purchasing items
-- running diagnostics
+**Where implemented:** `KioskInterface`  
+**How it works:**  
+Provides a single entry point for operations such as purchasing items, purchasing bundles, restocking inventory, diagnostics, and viewing transaction history.
 
 ### 2. Strategy Pattern
-Implemented using:
-- `PricingStrategy`
-- `StandardPricing`
-- `PricingSystem`
-
-This allows pricing behavior to be modular and extensible.
+**Where implemented:** `PricingStrategy`, `StandardPricing`, `DiscountPricing`, `EmergencyPricing`, `PricingSystem`  
+**How it works:**  
+Allows different pricing behaviors to be selected depending on kiosk environment and operating conditions.
 
 ### 3. Observer Pattern
-Implemented using:
-- `Event`
-- `EventBus`
-- `EventListener`
-- `CityMonitoringSystem`
+**Where implemented:** `EventBus`, `Event`, `EventListener`, `CityMonitoringSystem`, event classes  
+**How it works:**  
+System events such as low stock, policy violation, and hardware failure are published and sent to subscribed listeners automatically.
 
-This allows event-driven communication for alerts such as:
-- low stock detection
-- hardware failure
+### 4. Command Pattern
+**Where implemented:** `Command`, `PurchaseCommand`, `RefundCommand`, `RestockCommand`  
+**How it works:**  
+Encapsulates operational actions as command objects for modular execution.
 
-## Current Working Modules
+### 5. State Pattern
+**Where implemented:** `KioskState`, `ActiveState`, `PowerSavingState`, `MaintenanceState`, `EmergencyLockdownState`  
+**How it works:**  
+The kiosk behaves differently depending on the current operational mode.
 
+### 6. Abstract Factory Pattern
+**Where implemented:** `KioskFactory`, `HospitalKioskFactory`, `MetroKioskFactory`, `UniversityKioskFactory`, `DisasterReliefKioskFactory`  
+**How it works:**  
+Creates environment-specific inventory setup and pricing strategy without modifying the core logic.
+
+### 7. Chain of Responsibility Pattern
+**Where implemented:** `FailureHandler`, `RetryHandler`, `RecalibrationHandler`, `TechnicianAlertHandler`  
+**How it works:**  
+Passes hardware failure through a sequence of handlers until the issue is handled or escalated.
+
+### 8. Memento Pattern
+**Where implemented:** `TransactionSnapshot`, `TransactionCaretaker`  
+**How it works:**  
+Stores important state information before risky operations to support safe recovery logic.
+
+### 9. Singleton Pattern
+**Where implemented:** `CentralRegistry`  
+**How it works:**  
+Maintains one shared global source of truth for current kiosk type and system mode.
+
+### 10. Mediator Pattern
+**Where implemented:** `DecisionMediator`  
+**How it works:**  
+Coordinates state-based operational decisions without tightly coupling all subsystems together.
+
+---
+
+## Major Functional Modules
+
+### Inventory Module
 - `Product`
+- `Bundle`
 - `InventorySystem`
-- `PaymentSystem`
-- `HardwareLayer`
-- `PricingSystem`
-- `KioskCoreSystem`
-- `KioskInterface`
-- `EventBus`
-- `CityMonitoringSystem`
+- `InventoryPolicy`
 
-## Placeholder / Planned Modules for Subtask 3
+Handles:
+- stock tracking
+- reserved stock
+- bundle definitions
+- environment-specific rules
+- low-stock detection
 
-The following components currently exist as placeholders and will be fully implemented in the final submission:
-
-- `CentralRegistry`
+### Pricing Module
+- `PricingStrategy`
+- `StandardPricing`
 - `DiscountPricing`
 - `EmergencyPricing`
+- `PricingSystem`
+
+Handles:
+- dynamic pricing strategy selection
+- pricing explanation
+- environment-sensitive price behavior
+
+### Transaction Module
 - `Transaction`
-- `Command`
+- `TransactionManager`
 - `PurchaseCommand`
 - `RefundCommand`
 - `RestockCommand`
-- `TransactionManager`
 - `TransactionSnapshot`
 - `TransactionCaretaker`
 
+Handles:
+- command execution
+- transaction history
+- status updates
+- pre-operation snapshot support
+
+### Hardware & Recovery Module
+- `HardwareLayer`
+- `FailureHandler`
+- `RetryHandler`
+- `RecalibrationHandler`
+- `TechnicianAlertHandler`
+
+Handles:
+- hardware simulation
+- diagnostics
+- failure recovery flow
+- escalation for unresolved issues
+
+### Event & Monitoring Module
+- `EventBus`
+- `LowStockEvent`
+- `HardwareFailureEvent`
+- `PolicyViolationEvent`
+- `EmergencyModeActivated`
+- `CityMonitoringSystem`
+
+Handles:
+- publishing alerts
+- monitoring updates
+- event-driven notifications
+
+### Persistence Module
+- `InventoryStorage`
+- `TransactionStorage`
+- `ConfigStorage`
+
+Handles:
+- inventory export
+- transaction history export
+- config export
+
+---
+
 ## Simulation Flow
 
-The current simulation works through console input and supports both **User Mode** and **Admin Mode**.
+The project includes an interactive **console-based simulation**.
 
-1. system prompts user to select mode (User / Admin)
+### User Mode
+The user can:
+- view products
+- view bundles
+- purchase products
+- purchase bundles
+- simulate hardware failure on next dispense
+
+### Admin Mode
+The admin can:
+- login using password `1234`
+- view inventory
+- restock products
+- run diagnostics
+- view transaction history
+- change system mode
+- switch kiosk environment without rerunning the application
+- save persistence files
 
 ---
 
-### User Mode Flow
+## Example Demo Scenarios
 
-2. user selects kiosk type (Hospital / Metro / University / Disaster Relief)  
-3. system loads products for the selected environment  
-4. user views available products  
-5. user enters product ID, quantity, and payment method  
-6. system checks stock availability  
-7. system calculates final price using pricing strategy  
-8. payment is processed  
-9. hardware attempts to dispense the product  
-10. system updates inventory after successful transaction  
-11. system generates alerts (e.g., low stock or hardware failure)
+### Scenario 1: University Purchase with Discount Pricing
+1. Select **University** environment
+2. View products
+3. Purchase `Earphones`
+4. System shows:
+   - pricing strategy used
+   - base total
+   - discount applied
+   - final price
+5. Transaction is recorded
+
+### Scenario 2: Hardware Failure and Recovery
+1. Enter **User Mode**
+2. Simulate hardware failure
+3. Attempt a purchase
+4. System triggers:
+   - hardware failure handling
+   - recovery chain
+   - event notification
+   - monitoring alert
+
+### Scenario 3: Admin Operations
+1. Enter **Admin Mode**
+2. Login with password `1234`
+3. Restock item
+4. Change system mode
+5. Switch kiosk environment
+6. Save inventory / transactions / config
 
 ---
-
-### Admin Mode Flow
-
-2. admin enters password for authentication  
-3. admin selects kiosk type  
-4. admin views current inventory  
-5. admin can restock products  
-6. admin can run system diagnostics  
-7. admin can simulate hardware failure for testing  
-
-## Team Contribution Mapping
-
-### Priya J Shah — 202512100
-- Product model
-- Inventory system
-- stock calculation and inventory operations
-
-### Jay Shah — 202512059
-- Kiosk interface
-- kiosk core system
-- pricing strategy integration
-
-### Priya D Shah — 202512105
-- payment system
-- planned transaction and command modules
-
-### Jenil Shah — 202512110
-- hardware abstraction layer
-- event system
-- monitoring and alert handling
 
 ## Folder Structure
 
 ```text
-include/   -> header files
-src/       -> implementation files
-main.cpp   -> interactive simulation entry point
-README.md  -> project documentation
-```
-
-## How to Compile and Run
-
-### Prerequisites
-- C++ compiler supporting C++17 (g++ / clang++)
-- Terminal / Command Prompt
-
----
-
-## Compile the Project
-
-### On Mac / Linux
-```bash
-g++ -std=c++17 main.cpp src/*/*.cpp -o kiosk_app
-```
-
-### On Windows
-```bash
-g++ -std=c++17 main.cpp src/*/*.cpp -o kiosk_app.exe
-```
-
-
-## Run the Project
-
-### On Mac / Linux
-```bash
-./kiosk_app
-```
-
-### On Windows
-```bash
-kiosk_app.exe
-```
+include/          -> header files
+src/              -> implementation files
+frontend/         -> minimal React frontend
+data/             -> generated persistence files
+demo/             -> screenshots / demo media
+main.cpp          -> console simulation entry point
+README.md         -> project documentation
