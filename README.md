@@ -1,7 +1,6 @@
 # Zephyrus Retail OS
 
 ![Language](https://img.shields.io/badge/language-C++-blue)
-![Frontend](https://img.shields.io/badge/frontend-React%20%2B%20Tailwind-4f46e5)
 ![Stage](https://img.shields.io/badge/stage-Final%20Project-success)
 ![OOP](https://img.shields.io/badge/focus-OOP%20%26%20Design%20Patterns-1d4ed8)
 
