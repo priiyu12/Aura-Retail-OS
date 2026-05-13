@@ -324,9 +324,7 @@ The admin can:
 ```text
 include/          -> header files
 src/              -> implementation files
-frontend/         -> minimal React frontend
 data/             -> generated persistence files
-demo/             -> screenshots / demo media
 main.cpp          -> console simulation entry point
 README.md         -> project documentation
 ```
